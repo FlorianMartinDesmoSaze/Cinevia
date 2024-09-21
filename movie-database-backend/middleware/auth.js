@@ -22,7 +22,7 @@ const auth = async (req, res, next) => {
     }
 
     req.token = token;
-    req.user = user;
+    req.user = { userId: user._id, email: user.email }; // Only set necessary fields
     next();
   } catch (error) {
     console.error('Authentication error:', error.message);
