@@ -1,0 +1,136 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .movieList {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .movieItem {
+    margin-bottom: 1rem;
+  }
+  
+  .movieLink {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+  
+  .movieLink:hover {
+    text-decoration: underline;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+  }
+
+  .pagination button {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(45deg, #752bff, #ff41ff);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 0.5rem;
+  }
+
+  .pagination button:hover {
+    background: linear-gradient(45deg, #6620e0, #e030e0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .pagination button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .pagination span {
+    margin: 0 1rem;
+  }
+
+  .movieGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .searchBar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .searchBar input {
+    border-radius: 25px 0 0 25px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .searchBar input:focus {
+    outline: none;
+    border-color: #752bff;
+    box-shadow: 0 0 0 2px rgba(117, 43, 255, 0.2);
+  }
+
+  .searchBar button {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(45deg, #752bff, #ff41ff);
+    color: white;
+    border: none;
+    border-radius: 0 25px 25px 0;
+    cursor: pointer;
+    transition: background 0.3s ease; /* Remove transform from transition */
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .searchBar button:hover {
+    background: linear-gradient(45deg, #6620e0, #e030e0);
+    /* Remove transform property */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .gradientButton {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(45deg, #752bff, #ff41ff);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .gradientButton:hover {
+    background: linear-gradient(45deg, #6620e0, #e030e0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .gradientButton:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }

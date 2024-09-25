@@ -1,0 +1,184 @@
+.home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .hero {
+    position: relative;
+    text-align: center;
+    margin-bottom: 40px;
+    height: 70vh;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 16px; /* Add rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow */
+  }
+  
+  .heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    border-radius: 16px; /* Match the hero's border-radius */
+    pointer-events: none; /* Ensure the overlay doesn't interfere with clicks */
+  }
+  
+  .heroContent {
+    position: relative;
+    z-index: 2;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    padding: 20px;
+  }
+  
+  .hero h1 {
+    font-size: 4rem; /* Increased font size */
+    margin-bottom: 20px;
+  }
+  
+  .hero p {
+    font-size: 1.5rem; /* Increased font size */
+    margin-bottom: 30px;
+  }
+  
+  .ctaButton,
+  .seeMoreButton,
+  .trending .seeMoreButton {
+    display: inline-block;
+    padding: 15px 30px;
+    background: linear-gradient(45deg, #752bff, #ff41ff);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ctaButton:hover,
+  .seeMoreButton:hover,
+  .trending .seeMoreButton:hover {
+    background: linear-gradient(45deg, #6620e0, #e030e0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Additional styles for seeMoreButton */
+  .seeMoreButton,
+  .trending .seeMoreButton {
+    width: 200px;
+    margin: 20px auto 0;
+    display: block;
+  }
+  
+  .features {
+    margin-bottom: 40px;
+  }
+  
+  .features h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .featureList {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  
+  .feature {
+    width: 30%;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .trending {
+    margin-bottom: 40px;
+  }
+
+  .trending h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .movieGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    max-width: 1000px; /* Adjust this value based on your design preferences */
+    margin: 0 auto;
+    animation: fadeIn 1s ease-in;
+  }
+  
+  .movieCard {
+    text-align: center;
+    transition: transform 0.3s ease;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .movieCard:hover {
+    transform: scale(1.05);
+  }
+  
+  .movieCard img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .movieCard h3 {
+    font-size: 1rem;
+    margin: 0 0 5px 0;
+  }
+  
+  .releaseDate {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0 0 5px 0;
+  }
+  
+  .rating {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #f39c12;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2rem;
+  }
+  
+  .error {
+    color: #e74c3c;
+  }
+  
+  @media (max-width: 768px) {
+    .feature {
+      width: 100%;
+    }
+  }
+  
+  @media (min-width: 900px) {
+    .movieGrid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }

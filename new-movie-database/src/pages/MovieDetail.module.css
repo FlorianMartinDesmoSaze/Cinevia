@@ -1,0 +1,70 @@
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .title {
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .content {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .poster {
+    max-width: 300px;
+    height: auto;
+  }
+  
+  .details {
+    flex: 1;
+  }
+  
+  .overview {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  .info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .label {
+    font-weight: bold;
+  }
+  
+  .value {
+    color: #555;
+  }
+  
+  .favoriteButton,
+  .trailerButton {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .favoriteButton:hover,
+  .trailerButton:hover {
+    background-color: #0052a3;
+  }
+  
+  .ratingContainer {
+    margin-bottom: 1rem;
+  }
+  
+  .ratingContainer p {
+    margin-bottom: 0.5rem;
+  }

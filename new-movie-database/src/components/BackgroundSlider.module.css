@@ -1,0 +1,26 @@
+.sliderContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 16px; /* Match the hero's border-radius */
+  }
+  
+  .sliderImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    border-radius: 16px; /* Match the hero's border-radius */
+  }
+  
+  .sliderImage.active {
+    opacity: 1;
+  }
