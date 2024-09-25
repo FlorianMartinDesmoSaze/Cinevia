@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.0.1",
+    "supertest": "^7.0.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+  "transform": {
+    "^.+\\.[t|j]sx?$": "babel-jest"
+  }
+}
+}
