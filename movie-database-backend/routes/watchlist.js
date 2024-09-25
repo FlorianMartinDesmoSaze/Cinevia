@@ -88,14 +88,10 @@ router.delete('/:movieId', auth, async (req, res) => {
     const initialLength = user.watchlist.length;
     user.watchlist = user.watchlist.filter(id => id !== req.params.movieId);
     
-    if (user.watchlist.length === initialLength) {
-      return res.status(404).json({ message: 'Movie not found in watchlist' });
-    }
-
     await user.save();
     
     console.log('Updated user:', user);
-    res.json(user.watchlist);
+    res.json({ message: 'Movie removed from watchlist successfully', watchlist: user.watchlist });
   } catch (error) {
     console.error('Error removing from watchlist:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

@@ -53,12 +53,11 @@ router.post('/', auth, async (req, res) => {
       user.favorites = [];
     }
 
-    if (user.favorites.includes(movieId)) {
-      return res.status(400).json({ message: 'Movie already in favorites' });
+    const movieIdString = movieId.toString();
+    if (!user.favorites.includes(movieIdString)) {
+      user.favorites.push(movieIdString);
+      await user.save();
     }
-    
-    user.favorites.push(movieId);
-    await user.save();
     
     console.log('Updated user:', user);
     res.json(user.favorites);
@@ -91,14 +90,10 @@ router.delete('/:movieId', auth, async (req, res) => {
     const initialLength = user.favorites.length;
     user.favorites = user.favorites.filter(id => id !== req.params.movieId);
     
-    if (user.favorites.length === initialLength) {
-      return res.status(404).json({ message: 'Movie not found in favorites' });
-    }
-
     await user.save();
     
     console.log('Updated user:', user);
-    res.json(user.favorites);
+    res.json({ message: 'Movie removed from favorites successfully', favorites: user.favorites });
   } catch (error) {
     console.error('Error removing favorite:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
