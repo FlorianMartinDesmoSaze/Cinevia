@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaStar, FaRegStar, FaPlus, FaMinus } from 'react-icons/fa';
-import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites } from '../services/api';
+import { FaStar } from 'react-icons/fa';
+import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, isFavorite, isInWatchlist } from '../services/api';
 import styles from './MovieCard.module.css';
+import classNames from 'classnames'; // You might need to install this package: npm install classnames
 
 function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating = false, isOnFavoritesPage = false, isOnWatchlistPage = false }) {
   const [isFav, setIsFav] = useState(isOnFavoritesPage);
@@ -12,7 +13,24 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-  }, []);
+
+    const checkStatuses = async () => {
+      try {
+        const [favoriteStatus, watchlistStatus] = await Promise.all([
+          isFavorite(movie.id),
+          isInWatchlist(movie.id)
+        ]);
+        setIsFav(favoriteStatus);
+        setIsWatchlist(watchlistStatus);
+      } catch (error) {
+        console.error('Error checking statuses:', error);
+      }
+    };
+
+    if (isLoggedIn) {
+      checkStatuses();
+    }
+  }, [movie.id, isLoggedIn]);
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
@@ -32,7 +50,8 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
           throw new Error('Failed to remove favorite');
         }
       } else {
-        await addToFavorites(movie.id);
+        const result = await addToFavorites(movie.id);
+        console.log('Add favorite result:', result);
         setIsFav(true);
       }
     } catch (error) {
@@ -41,7 +60,7 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
         console.error('Response data:', error.response.data);
         console.error('Response status:', error.response.status);
       }
-      alert(`Failed to update favorite status. ${error.response?.data?.message || 'Please try again.'}`);
+      alert(`Failed to update favorite status. ${error.response?.data?.message || error.message || 'Please try again.'}`);
     }
   };
 
@@ -54,11 +73,17 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
 
     try {
       if (isWatchlist) {
-        await removeFromWatchlist(movie.id);
-        setIsWatchlist(false);
-        if (onRemoveFromWatchlist) onRemoveFromWatchlist(movie.id);
+        const result = await removeFromWatchlist(movie.id);
+        console.log('Remove from watchlist result:', result);
+        if (result.message === 'Movie removed from watchlist successfully') {
+          setIsWatchlist(false);
+          if (onRemoveFromWatchlist) onRemoveFromWatchlist(movie.id);
+        } else {
+          throw new Error('Failed to remove from watchlist');
+        }
       } else {
-        await addToWatchlist(movie.id);
+        const result = await addToWatchlist(movie.id);
+        console.log('Add to watchlist result:', result);
         setIsWatchlist(true);
       }
     } catch (error) {
@@ -67,7 +92,7 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
         console.error('Response data:', error.response.data);
         console.error('Response status:', error.response.status);
       }
-      alert('Failed to update watchlist status. Please try again.');
+      alert(`Failed to update watchlist status. ${error.response?.data?.message || error.message || 'Please try again.'}`);
     }
   };
 
@@ -92,10 +117,10 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
         )}
       </Link>
       <button onClick={handleFavoriteClick} className={styles.favoriteButton}>
-        {isFav ? <FaStar color="gold" /> : <FaRegStar color="white" />}
+        <FaStar className={classNames(styles.iconTransition, styles.favoriteIcon, { [styles.active]: isFav })} />
       </button>
       <button onClick={handleWatchlistClick} className={styles.watchlistButton}>
-        {isWatchlist ? <FaMinus color="white" /> : <FaPlus color="white" />}
+        <div className={classNames(styles.watchlistIcon, { [styles.active]: isWatchlist })} />
       </button>
     </div>
   );

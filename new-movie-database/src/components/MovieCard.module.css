@@ -67,7 +67,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     font-size: 1.5rem;
 }
 
@@ -81,4 +81,63 @@
 
 .favoriteButton:hover, .watchlistButton:hover {
     background-color: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
 }
+
+.iconTransition {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.iconTransition.active {
+    transform: scale(1.2);
+}
+
+.favoriteIcon {
+    color: white;
+}
+
+.favoriteIcon.active {
+    color: gold;
+}
+
+.watchlistIcon {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.watchlistIcon::before,
+.watchlistIcon::after {
+    content: '';
+    position: absolute;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.watchlistIcon::before {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transform: translateY(-50%);
+}
+
+.watchlistIcon::after {
+    top: 0;
+    left: 50%;
+    bottom: 0;
+    width: 4px;
+    transform: translateX(-50%);
+}
+
+.watchlistIcon.active::before {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.watchlistIcon.active::after {
+    transform: translateX(-50%) scaleY(0);
+}
+
+/* .watchlistIcon.active {
+    color: #4CAF50;
+} */

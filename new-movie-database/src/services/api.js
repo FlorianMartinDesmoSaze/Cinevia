@@ -165,4 +165,24 @@ export const deleteAccount = async (password) => {
   }
 };
 
+export const isFavorite = async (movieId) => {
+  try {
+    const response = await api.get(`/favorites/${movieId}`);
+    return response.data.isFavorite;
+  } catch (error) {
+    console.error('Error checking favorite status:', error);
+    throw error;
+  }
+};
+
+export const isInWatchlist = async (movieId) => {
+  try {
+    const response = await api.get(`/watchlist/${movieId}`);
+    return response.data.isInWatchlist;
+  } catch (error) {
+    console.error('Error checking watchlist status:', error);
+    throw error;
+  }
+};
+
 export default api;

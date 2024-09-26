@@ -50,15 +50,14 @@ router.post('/', auth, async (req, res) => {
       user.watchlist = [];
     }
 
-    if (user.watchlist.includes(movieId)) {
-      return res.status(400).json({ message: 'Movie already in watchlist' });
+    if (!user.watchlist.includes(movieId)) {
+      user.watchlist.push(movieId);
+      await user.save();
+      console.log('Updated user:', user);
+      res.json({ message: 'Movie added to watchlist successfully', watchlist: user.watchlist });
+    } else {
+      res.status(400).json({ message: 'Movie is already in watchlist' });
     }
-    
-    user.watchlist.push(movieId);
-    await user.save();
-    
-    console.log('Updated user:', user);
-    res.json({ message: 'Movie added to watchlist', watchlist: user.watchlist });
   } catch (error) {
     console.error('Error adding to watchlist:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -94,6 +93,22 @@ router.delete('/:movieId', auth, async (req, res) => {
     res.json({ message: 'Movie removed from watchlist successfully', watchlist: user.watchlist });
   } catch (error) {
     console.error('Error removing from watchlist:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Add this new route to check if a movie is in the watchlist
+router.get('/:movieId', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isInWatchlist = user.watchlist.includes(req.params.movieId);
+    res.json({ isInWatchlist });
+  } catch (error) {
+    console.error('Error checking watchlist status:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

@@ -57,10 +57,11 @@ router.post('/', auth, async (req, res) => {
     if (!user.favorites.includes(movieIdString)) {
       user.favorites.push(movieIdString);
       await user.save();
+      console.log('Updated user:', user);
+      res.json({ message: 'Movie added to favorites successfully', favorites: user.favorites });
+    } else {
+      res.status(400).json({ message: 'Movie is already in favorites' });
     }
-    
-    console.log('Updated user:', user);
-    res.json(user.favorites);
   } catch (error) {
     console.error('Error adding favorite:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -96,6 +97,22 @@ router.delete('/:movieId', auth, async (req, res) => {
     res.json({ message: 'Movie removed from favorites successfully', favorites: user.favorites });
   } catch (error) {
     console.error('Error removing favorite:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Add this new route to check if a movie is in favorites
+router.get('/:movieId', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isFavorite = user.favorites.includes(req.params.movieId);
+    res.json({ isFavorite });
+  } catch (error) {
+    console.error('Error checking favorite status:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

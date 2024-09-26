@@ -8,8 +8,11 @@
     "test": "jest"
   },
   "jest": {
-  "transform": {
-    "^.+\\.[t|j]sx?$": "babel-jest"
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
+  "dependencies": {
+    "classnames": "^2.5.1"
   }
-}
 }
