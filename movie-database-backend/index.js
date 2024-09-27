@@ -5,6 +5,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const favoriteRoutes = require('./routes/favorites');
 const watchlistRoutes = require('./routes/watchlist');
+const watchedRoutes = require('./routes/watched');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/watchlist', watchlistRoutes);
+app.use('/api/watched', watchedRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
