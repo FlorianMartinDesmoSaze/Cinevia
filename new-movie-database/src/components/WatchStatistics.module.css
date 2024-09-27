@@ -1,0 +1,16 @@
+.watchStatistics {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+  }
+  
+  .watchStatistics h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+  
+  .watchStatistics p {
+    margin: 5px 0;
+  }

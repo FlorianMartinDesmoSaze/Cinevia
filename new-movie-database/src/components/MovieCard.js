@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaStar } from 'react-icons/fa';
-import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, isFavorite, isInWatchlist } from '../services/api';
+import { FaStar, FaEye } from 'react-icons/fa';
+import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, isFavorite, isInWatchlist, isWatched, addToWatched, removeFromWatched } from '../services/api';
 import styles from './MovieCard.module.css';
-import classNames from 'classnames'; // You might need to install this package: npm install classnames
+import classNames from 'classnames';
 
 function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating = false, isOnFavoritesPage = false, isOnWatchlistPage = false }) {
   const [isFav, setIsFav] = useState(isOnFavoritesPage);
   const [isWatchlist, setIsWatchlist] = useState(isOnWatchlistPage);
+  const [isWatchedMovie, setIsWatchedMovie] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -16,12 +17,14 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
 
     const checkStatuses = async () => {
       try {
-        const [favoriteStatus, watchlistStatus] = await Promise.all([
+        const [favoriteStatus, watchlistStatus, watchedStatus] = await Promise.all([
           isFavorite(movie.id),
-          isInWatchlist(movie.id)
+          isInWatchlist(movie.id),
+          isWatched(movie.id)
         ]);
         setIsFav(favoriteStatus);
         setIsWatchlist(watchlistStatus);
+        setIsWatchedMovie(watchedStatus);
       } catch (error) {
         console.error('Error checking statuses:', error);
       }
@@ -42,7 +45,6 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
     try {
       if (isFav) {
         const result = await removeFromFavorites(movie.id);
-        console.log('Remove favorite result:', result);
         if (result.message === 'Movie removed from favorites successfully') {
           setIsFav(false);
           if (onRemoveFavorite) onRemoveFavorite(movie.id);
@@ -50,17 +52,12 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
           throw new Error('Failed to remove favorite');
         }
       } else {
-        const result = await addToFavorites(movie.id);
-        console.log('Add favorite result:', result);
+        await addToFavorites(movie.id);
         setIsFav(true);
       }
     } catch (error) {
       console.error('Error updating favorite status:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-      }
-      alert(`Failed to update favorite status. ${error.response?.data?.message || error.message || 'Please try again.'}`);
+      alert(`Failed to update favorite status. Please try again.`);
     }
   };
 
@@ -74,7 +71,6 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
     try {
       if (isWatchlist) {
         const result = await removeFromWatchlist(movie.id);
-        console.log('Remove from watchlist result:', result);
         if (result.message === 'Movie removed from watchlist successfully') {
           setIsWatchlist(false);
           if (onRemoveFromWatchlist) onRemoveFromWatchlist(movie.id);
@@ -82,17 +78,33 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
           throw new Error('Failed to remove from watchlist');
         }
       } else {
-        const result = await addToWatchlist(movie.id);
-        console.log('Add to watchlist result:', result);
+        await addToWatchlist(movie.id);
         setIsWatchlist(true);
       }
     } catch (error) {
       console.error('Error updating watchlist status:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
+      alert(`Failed to update watchlist status. Please try again.`);
+    }
+  };
+
+  const handleWatchedClick = async (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      alert('Please log in to manage your watched movies.');
+      return;
+    }
+
+    try {
+      if (isWatchedMovie) {
+        await removeFromWatched(movie.id);
+        setIsWatchedMovie(false);
+      } else {
+        await addToWatched(movie.id);
+        setIsWatchedMovie(true);
       }
-      alert(`Failed to update watchlist status. ${error.response?.data?.message || error.message || 'Please try again.'}`);
+    } catch (error) {
+      console.error('Error updating watched status:', error);
+      alert('Failed to update watched status. Please try again.');
     }
   };
 
@@ -121,6 +133,9 @@ function MovieCard({ movie, onRemoveFavorite, onRemoveFromWatchlist, showRating 
       </button>
       <button onClick={handleWatchlistClick} className={styles.watchlistButton}>
         <div className={classNames(styles.watchlistIcon, { [styles.active]: isWatchlist })} />
+      </button>
+      <button onClick={handleWatchedClick} className={styles.watchedButton}>
+        <FaEye className={classNames(styles.iconTransition, styles.watchedIcon, { [styles.active]: isWatchedMovie })} />
       </button>
     </div>
   );

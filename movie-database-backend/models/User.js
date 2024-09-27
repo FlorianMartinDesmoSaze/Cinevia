@@ -5,8 +5,14 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  favorites: [{ type: String }], // Changed from ObjectId to String
-  watchlist: [{ type: String }], // Changed from ObjectId to String
+  favorites: [{ type: String }], // Array of movie IDs
+  watchlist: [{ type: String }], // Array of movie IDs
+  watched: [ // New field: Array of watched movie IDs
+    {
+      movieId: { type: String, required: true },
+      watchedDate: { type: Date, default: Date.now }
+    }
+  ]
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

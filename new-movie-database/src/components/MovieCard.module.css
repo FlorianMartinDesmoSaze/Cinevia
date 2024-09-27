@@ -71,6 +71,23 @@
     font-size: 1.5rem;
 }
 
+.watchedButton {
+    position: absolute;
+    bottom: 80px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 1.5rem;
+}
+
 .favoriteButton {
     right: 10px;
 }
@@ -79,7 +96,7 @@
     left: 10px;
 }
 
-.favoriteButton:hover, .watchlistButton:hover {
+.favoriteButton:hover, .watchlistButton:hover, .watchedButton:hover {
     background-color: rgba(0, 0, 0, 0.9);
     transform: scale(1.1);
 }
@@ -92,12 +109,16 @@
     transform: scale(1.2);
 }
 
-.favoriteIcon {
+.favoriteIcon, .watchedIcon {
     color: white;
 }
 
 .favoriteIcon.active {
     color: gold;
+}
+
+.watchedIcon.active {
+    color: #4CAF50;
 }
 
 .watchlistIcon {
@@ -137,7 +158,3 @@
 .watchlistIcon.active::after {
     transform: translateX(-50%) scaleY(0);
 }
-
-/* .watchlistIcon.active {
-    color: #4CAF50;
-} */
