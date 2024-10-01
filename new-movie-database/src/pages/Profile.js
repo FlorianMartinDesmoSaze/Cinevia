@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import {
   getUserProfile,
@@ -23,22 +23,18 @@ function Profile() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [favoritesPerPage] = useState(5);
+  const [animationDirection, setAnimationDirection] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       setLoading(true);
       try {
         const userData = await getUserProfile();
-        if (!userData) {
-          throw new Error('User data is null or undefined');
-        }
         setUser(userData);
         
         const favoriteIds = await getFavorites();
-        if (!Array.isArray(favoriteIds)) {
-          throw new Error('Favorites data is not an array');
-        }
-        
         const favoriteMovies = await Promise.all(
           favoriteIds.map(async (id) => {
             try {
@@ -52,7 +48,7 @@ function Profile() {
         setFavorites(favoriteMovies.filter(movie => movie !== null));
       } catch (error) {
         console.error('Error fetching user profile:', error);
-        showNotification(`Failed to load user profile: ${error.message}. Please try again.`, 'error');
+        showNotification('Failed to load user profile. Please try again.', 'error');
       } finally {
         setLoading(false);
       }
@@ -126,11 +122,26 @@ function Profile() {
     try {
       await removeFromFavorites(movieId);
       setFavorites(prevFavorites => prevFavorites.filter(movie => movie.id !== movieId));
+      showNotification('Movie removed from favorites', 'success');
     } catch (error) {
       console.error('Error removing favorite:', error);
-      showNotification('Failed to remove favorite. Please try again.', 'error');
+      showNotification('Failed to remove movie from favorites', 'error');
     }
   };
+
+  const changePage = (direction) => {
+    setAnimationDirection(direction);
+    setTimeout(() => {
+      setCurrentPage(prevPage => direction === 'next' ? prevPage + 1 : prevPage - 1);
+      setAnimationDirection('');
+    }, 500); // Match this with your CSS transition duration
+  };
+
+  const indexOfLastFavorite = currentPage * favoritesPerPage;
+  const indexOfFirstFavorite = indexOfLastFavorite - favoritesPerPage;
+  const currentFavorites = favorites.slice(indexOfFirstFavorite, indexOfLastFavorite);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   if (loading) {
     return <div className={styles.loading}>Loading...</div>;
@@ -141,8 +152,20 @@ function Profile() {
       <h1 className={styles.title}>User Profile</h1>
       <div className={styles.userInfo}>
         <h2>Current Information</h2>
-        <p>Username: {user?.username || 'Not available'}</p>
-        <p>Email: {user?.email || 'Not available'}</p>
+        <div className={styles.infoCard}>
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>Username:</span>
+            <span className={styles.infoValue}>{user?.username || 'Not available'}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>Email:</span>
+            <span className={styles.infoValue}>{user?.email || 'Not available'}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>Member since:</span>
+            <span className={styles.infoValue}>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Not available'}</span>
+          </div>
+        </div>
       </div>
 
       <div className={styles.updateForms}>
@@ -215,14 +238,41 @@ function Profile() {
         {favorites.length === 0 ? (
           <p>You haven't added any favorites yet.</p>
         ) : (
-          <ul className={styles.favoritesList}>
-            {favorites.map(movie => (
-              <li key={movie.id} className={styles.favoriteItem}>
-                {movie.title}
-                <button onClick={() => handleRemoveFavorite(movie.id)} className={styles.removeButton}>Remove</button>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className={styles.favoritesList}>
+              {currentFavorites.map(movie => (
+                <li key={movie.id} className={styles.favoriteItem}>
+                  <Link to={`/movie/${movie.id}`} className={styles.movieLink}>
+                    <img 
+                      src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`} 
+                      alt={`${movie.title} poster`}
+                      className={styles.movieThumbnail}
+                    />
+                  </Link>
+                  <Link to={`/movie/${movie.id}`} className={styles.movieTitle}>
+                    {movie.title}
+                  </Link>
+                  <button 
+                    onClick={() => handleRemoveFavorite(movie.id)} 
+                    className={styles.removeButton}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className={styles.pagination}>
+              {Array.from({ length: Math.ceil(favorites.length / favoritesPerPage) }, (_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => paginate(i + 1)}
+                  className={`${styles.paginationButton} ${currentPage === i + 1 ? styles.active : ''}`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

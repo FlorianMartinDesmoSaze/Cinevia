@@ -72,25 +72,51 @@
   .favoritesList {
     list-style-type: none;
     padding: 0;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .favoritesList.next {
+    transform: translateX(-100%);
+  }
+  
+  .favoritesList.prev {
+    transform: translateX(100%);
   }
   
   .favoriteItem {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background-color: white;
+    margin-bottom: 15px;
     padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f5f5f5;
+    border-radius: 5px;
+  }
+  
+  .movieThumbnail {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    margin-right: 15px;
+    border-radius: 3px;
+  }
+  
+  .movieTitle {
+    flex-grow: 1;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .movieTitle:hover {
+    text-decoration: underline;
   }
   
   .removeButton {
-    background: linear-gradient(45deg, #ff4136, #ff6b6b);
+    background-color: #ff4d4d;
     color: white;
     border: none;
     padding: 5px 10px;
-    border-radius: 25px;
+    border-radius: 3px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.9rem;
@@ -147,4 +173,73 @@
     margin-bottom: 20px;
   }
   
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .paginationButton {
+    padding: 5px 10px;
+    margin: 0 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .paginationButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .paginationButton.active {
+    background-color: #752bff;
+    color: white;
+    border-color: #752bff;
+  }
+  
   /* Add more specific styles as needed */
+  
+  .userInfo {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .userInfo h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .infoCard {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .infoItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .infoItem:last-child {
+    border-bottom: none;
+  }
+  
+  .infoLabel {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .infoValue {
+    color: #333;
+    font-size: 1.1em;
+  }
