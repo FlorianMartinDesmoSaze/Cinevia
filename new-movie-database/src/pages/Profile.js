@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 import {
   getUserProfile,
   updateEmail,
@@ -14,10 +15,9 @@ import styles from './Profile.module.css';
 
 function Profile() {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [user, setUser] = useState(null);
   const [favorites, setFavorites] = useState([]);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
   const [newEmail, setNewEmail] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -26,12 +26,19 @@ function Profile() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      setLoading(true);
       try {
         const userData = await getUserProfile();
-        console.log('User data:', userData); // Add this line for debugging
+        if (!userData) {
+          throw new Error('User data is null or undefined');
+        }
         setUser(userData);
+        
         const favoriteIds = await getFavorites();
-        console.log('Favorite IDs:', favoriteIds); // Add this line for debugging
+        if (!Array.isArray(favoriteIds)) {
+          throw new Error('Favorites data is not an array');
+        }
+        
         const favoriteMovies = await Promise.all(
           favoriteIds.map(async (id) => {
             try {
@@ -45,38 +52,47 @@ function Profile() {
         setFavorites(favoriteMovies.filter(movie => movie !== null));
       } catch (error) {
         console.error('Error fetching user profile:', error);
-        setError('Failed to load user profile. Please try again.');
+        showNotification(`Failed to load user profile: ${error.message}. Please try again.`, 'error');
       } finally {
         setLoading(false);
       }
     };
     fetchUserProfile();
-  }, []);
+  }, [showNotification]);
 
   const handleUpdateEmail = async (e) => {
     e.preventDefault();
+    if (!currentPassword) {
+      showNotification('Current password is required to update email.', 'error');
+      return;
+    }
     try {
-      const updatedUser = await updateEmail(newEmail);
-      console.log('Updated user:', updatedUser); // Add this line for debugging
+      const updatedUser = await updateEmail(newEmail, currentPassword);
       setUser(prevUser => ({ ...prevUser, email: newEmail }));
-      setMessage('Email updated successfully');
+      showNotification('Email updated successfully', 'success');
       setNewEmail('');
+      setCurrentPassword('');
     } catch (error) {
       console.error('Error updating email:', error);
-      setError('Failed to update email. Please try again.');
+      showNotification(error.response?.data?.message || 'Failed to update email. Please try again.', 'error');
     }
   };
 
   const handleUpdateUsername = async (e) => {
     e.preventDefault();
+    if (!currentPassword) {
+      showNotification('Current password is required to update username.', 'error');
+      return;
+    }
     try {
-      await updateUsername(newUsername);
+      await updateUsername(newUsername, currentPassword);
       setUser(prevUser => ({ ...prevUser, username: newUsername }));
-      setMessage('Username updated successfully');
+      showNotification('Username updated successfully', 'success');
       setNewUsername('');
+      setCurrentPassword('');
     } catch (error) {
       console.error('Error updating username:', error);
-      setError('Failed to update username. Please try again.');
+      showNotification(error.response?.data?.message || 'Failed to update username. Please try again.', 'error');
     }
   };
 
@@ -84,12 +100,12 @@ function Profile() {
     e.preventDefault();
     try {
       await changePassword(currentPassword, newPassword);
-      setMessage('Password changed successfully');
+      showNotification('Password changed successfully', 'success');
       setCurrentPassword('');
       setNewPassword('');
     } catch (error) {
       console.error('Error changing password:', error);
-      setError('Failed to change password. Please try again.');
+      showNotification(error.response?.data?.message || 'Failed to change password. Please try again.', 'error');
     }
   };
 
@@ -97,10 +113,11 @@ function Profile() {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       try {
         await deleteAccount();
-        navigate('/login'); // Redirect to login page after account deletion
+        showNotification('Account deleted successfully', 'success');
+        navigate('/login');
       } catch (error) {
         console.error('Error deleting account:', error);
-        setError('Failed to delete account. Please try again.');
+        showNotification(error.response?.data?.message || 'Failed to delete account. Please try again.', 'error');
       }
     }
   };
@@ -111,7 +128,7 @@ function Profile() {
       setFavorites(prevFavorites => prevFavorites.filter(movie => movie.id !== movieId));
     } catch (error) {
       console.error('Error removing favorite:', error);
-      setError('Failed to remove favorite. Please try again.');
+      showNotification('Failed to remove favorite. Please try again.', 'error');
     }
   };
 
@@ -122,9 +139,6 @@ function Profile() {
   return (
     <div className={styles.profileContainer}>
       <h1 className={styles.title}>User Profile</h1>
-      {error && <p className={styles.error}>{error}</p>}
-      {message && <p className={styles.message}>{message}</p>}
-      
       <div className={styles.userInfo}>
         <h2>Current Information</h2>
         <p>Username: {user?.username || 'Not available'}</p>
@@ -142,6 +156,14 @@ function Profile() {
             required
             className={styles.input}
           />
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="Current Password"
+            required
+            className={styles.input}
+          />
           <button type="submit" className={styles.button}>Update Email</button>
         </form>
 
@@ -152,6 +174,14 @@ function Profile() {
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
             placeholder="New Username"
+            required
+            className={styles.input}
+          />
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="Current Password"
             required
             className={styles.input}
           />

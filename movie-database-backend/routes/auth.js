@@ -55,9 +55,14 @@ router.post('/login', async (req, res) => {
 // Add this route to your existing routes
 router.get('/profile', auth, async (req, res) => {
   console.log('Profile route hit');
-  console.log('User from auth middleware:', req.user);
+  console.log('User ID from auth middleware:', req.user.userId);
   try {
-    res.json(req.user);
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('User data:', user);
+    res.json(user);
   } catch (error) {
     console.error('Get user profile error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -104,7 +109,11 @@ router.put('/update-email', auth, async (req, res) => {
     console.log('Update email route hit');
     console.log('User ID from token:', req.user.userId);
     const { newEmail, password } = req.body;
-    console.log('Request body:', { newEmail, password: '******' });
+    console.log('Request body:', { newEmail, password: password ? '******' : 'undefined' });
+
+    if (!password) {
+      return res.status(400).json({ message: 'Current password is required' });
+    }
 
     const user = await User.findById(req.user.userId);
     if (!user) {
@@ -117,7 +126,7 @@ router.put('/update-email', auth, async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       console.log('Password incorrect');
-      return res.status(400).json({ message: 'Password is incorrect' });
+      return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
     // Check if the new email is already in use
@@ -131,7 +140,7 @@ router.put('/update-email', auth, async (req, res) => {
     await user.save();
 
     console.log('Email updated successfully');
-    res.json({ message: 'Email updated successfully' });
+    res.json({ message: 'Email updated successfully', user: { email: user.email, username: user.username } });
   } catch (error) {
     console.error('Update email error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -144,7 +153,11 @@ router.put('/update-username', auth, async (req, res) => {
     console.log('Update username route hit');
     console.log('User ID from token:', req.user.userId);
     const { newUsername, password } = req.body;
-    console.log('Request body:', { newUsername, password: '******' });
+    console.log('Request body:', { newUsername, password: password ? '******' : 'undefined' });
+
+    if (!password) {
+      return res.status(400).json({ message: 'Current password is required' });
+    }
 
     const user = await User.findById(req.user.userId);
     if (!user) {
@@ -157,7 +170,7 @@ router.put('/update-username', auth, async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       console.log('Password incorrect');
-      return res.status(400).json({ message: 'Password is incorrect' });
+      return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
     // Check if the new username is already in use
@@ -171,7 +184,7 @@ router.put('/update-username', auth, async (req, res) => {
     await user.save();
 
     console.log('Username updated successfully');
-    res.json({ message: 'Username updated successfully' });
+    res.json({ message: 'Username updated successfully', user: { email: user.email, username: user.username } });
   } catch (error) {
     console.error('Update username error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

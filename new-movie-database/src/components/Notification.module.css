@@ -1,0 +1,39 @@
+.notification {
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    max-width: 300px;
+    word-wrap: break-word;
+  }
+  
+  .notification.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .notification.hide {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  
+  .success {
+    background-color: #4CAF50;
+  }
+  
+  .error {
+    background-color: #f44336;
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+  
+  .notification.show {
+    animation: slideDown 0.3s ease-out;
+  }

@@ -27,10 +27,15 @@ userSchema.pre('save', async function(next) {
 });
 
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!candidatePassword) {
+    console.log('Candidate password is undefined or empty');
+    return false;
+  }
   try {
     return await bcrypt.compare(candidatePassword, this.password);
   } catch (error) {
-    throw error;
+    console.error('Error comparing passwords:', error);
+    return false;
   }
 };
 

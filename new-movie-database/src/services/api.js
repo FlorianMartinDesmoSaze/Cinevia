@@ -59,9 +59,9 @@ export const getUserProfile = async () => {
   }
 };
 
-export const updateEmail = async (newEmail) => {
+export const updateEmail = async (newEmail, currentPassword) => {
   try {
-    const response = await api.put('/auth/update-email', { newEmail });
+    const response = await api.put('/auth/update-email', { newEmail, password: currentPassword });
     return response.data;
   } catch (error) {
     console.error('Error updating email:', error);
@@ -72,7 +72,10 @@ export const updateEmail = async (newEmail) => {
 export const getFavorites = async () => {
   try {
     const response = await api.get('/favorites');
-    return response.data; // This should be the user object containing the favorites array
+    if (!Array.isArray(response.data.favorites)) {
+      throw new Error('Favorites data is not in the expected format');
+    }
+    return response.data.favorites; // Return just the favorites array
   } catch (error) {
     console.error('Error fetching favorites:', error);
     throw error;
@@ -135,9 +138,9 @@ export const removeFromWatchlist = async (movieId) => {
   }
 };
 
-export const updateUsername = async (newUsername, password) => {
+export const updateUsername = async (newUsername, currentPassword) => {
   try {
-    const response = await api.put('/auth/update-username', { newUsername, password });
+    const response = await api.put('/auth/update-username', { newUsername, password: currentPassword });
     return response.data;
   } catch (error) {
     console.error('Error updating username:', error);

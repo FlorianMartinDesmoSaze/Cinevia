@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';  // Add this line
 import WatchedMovies from './pages/WatchedMovies';
+import { NotificationProvider } from './context/NotificationContext';
 
 function parseJwt(token) {
   try {
@@ -37,21 +38,23 @@ function App() {
   }, [navigate]);
 
   return (
-    <div className="App">
-      <Navbar /> {/* Add the Navbar component here */}
-      <Routes>
-        <Route path="/" element={<Home />} />  // Change this line
-        <Route path="/movies" element={<MovieList />} /> {/* Add this line */}
-        <Route path="/trending" element={<TrendingList />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/watchlist" element={<Watchlist />} />
-        <Route path="/watched" element={<WatchedMovies />} />
-        <Route path="/movie/:id" element={<MovieDetail />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </div>
+    <NotificationProvider>
+      <div className="App">
+        <Navbar /> {/* Add the Navbar component here */}
+        <Routes>
+          <Route path="/" element={<Home />} />  // Change this line
+          <Route path="/movies" element={<MovieList />} /> {/* Add this line */}
+          <Route path="/trending" element={<TrendingList />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/watched" element={<WatchedMovies />} />
+          <Route path="/movie/:id" element={<MovieDetail />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    </NotificationProvider>
   );
 }
 
