@@ -4,24 +4,59 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true, // This is important for sending cookies
 });
 
-// Add a request interceptor to include the auth token in requests
+// Function to get CSRF token from cookie
+const getCSRFToken = () => {
+  const name = 'XSRF-TOKEN=';
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const cookieArray = decodedCookie.split(';');
+  for (let i = 0; i < cookieArray.length; i++) {
+    let cookie = cookieArray[i].trim();
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length);
+    }
+  }
+  console.log('CSRF token not found in cookies');
+  return null;
+};
+
+// Add a request interceptor to include the auth token and CSRF token in requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
+    console.log('Auth token added to request');
+  } else {
+    console.log('No auth token found in localStorage');
   }
+  
+  const csrfToken = getCSRFToken();
+  if (csrfToken) {
+    config.headers['X-XSRF-TOKEN'] = csrfToken;
+    console.log('CSRF token added to request');
+  } else {
+    console.log('No CSRF token found');
+  }
+  
+  console.log('Request config:', config);
   return config;
 }, (error) => {
+  console.error('Request interceptor error:', error);
   return Promise.reject(error);
 });
 
 // Add a response interceptor to handle 401 errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('Response received:', response);
+    return response;
+  },
   (error) => {
+    console.error('Response error:', error);
     if (error.response && error.response.status === 401) {
+      console.log('401 error detected, removing token and redirecting to login');
       localStorage.removeItem('token');
       window.location = '/login';
     }
@@ -31,7 +66,9 @@ api.interceptors.response.use(
 
 export const login = async (email, password) => {
   try {
+    console.log('Attempting login...');
     const response = await api.post('/auth/login', { email, password });
+    console.log('Login response:', response.data);
     localStorage.setItem('token', response.data.token);
     return response.data;
   } catch (error) {

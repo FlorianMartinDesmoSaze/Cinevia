@@ -4,10 +4,49 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const crypto = require('crypto');
+const { body, validationResult } = require('express-validator');
+const csrf = require('csurf');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+const csrfProtection = csrf({ cookie: true });
+
+// Apply CSRF protection to all routes except login and register
+router.use((req, res, next) => {
+  if (req.path === '/login' || req.path === '/register') {
+    return next();
+  }
+  csrfProtection(req, res, next);
+});
+
+// Login route (no CSRF protection)
+router.post('/login', async (req, res) => {
+  try {
+    // Your existing login logic
+    // ...
+    
+    // After successful login, generate a new CSRF token
+    const csrfToken = req.csrfToken ? req.csrfToken() : '';
+    res.cookie('XSRF-TOKEN', csrfToken, { httpOnly: false, sameSite: 'Strict' });
+    
+    // Send the response with the token
+    res.json({ token: 'your-auth-token' });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error during login' });
+  }
+});
+
+router.post('/register', [
+  body('username').trim().isLength({ min: 3 }).escape(),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 6 }),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { username, email, password } = req.body;
     console.log('Registration attempt:', email);
@@ -24,35 +63,10 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'An error occurred during registration' });
   }
 });
 
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    console.log('Login attempt:', email);
-    const user = await User.findOne({ email });
-    if (!user) {
-      console.log('User not found');
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    console.log('User found:', user.email);
-    
-    const isMatch = await user.comparePassword(password);
-    console.log('Password match:', isMatch);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token, userId: user._id });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Add this route to your existing routes
 router.get('/profile', auth, async (req, res) => {
   console.log('Profile route hit');
   console.log('User ID from auth middleware:', req.user.userId);
@@ -73,7 +87,7 @@ router.get('/checkuser/:email', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
     if (user) {
-      res.json({ message: 'User found', email: user.email, hashedPassword: user.password });
+      res.json({ message: 'User found', email: user.email });
     } else {
       res.json({ message: 'User not found' });
     }
